@@ -18,9 +18,10 @@ export default function ChatInput({ onSend, isLoading }) {
   };
 
   return (
-    <div className="flex items-center p-2 border-t bg-white">
+    <div className="flex items-center p-2 bg-white shadow-inner">
       <textarea
-        className="flex-1 resize-none border rounded-lg p-2 text-sm focus:outline-none"
+        className="flex-1 resize-none rounded-lg p-2 text-sm focus:outline-none 
+                   bg-gray-100 shadow-sm focus:bg-white transition"
         rows="1"
         value={text}
         onChange={(e) => setText(e.target.value)}
@@ -31,7 +32,7 @@ export default function ChatInput({ onSend, isLoading }) {
       <button
         onClick={handleSend}
         disabled={isLoading}
-        className="ml-2 bg-[#e1454b] hover:bg-[#e98b8f] text-white p-2 rounded-lg transition-all"
+        className="ml-2 bg-[#e1454b] hover:bg-[#e98b8f] text-white px-4 py-2 rounded-lg shadow-sm transition-all disabled:opacity-50"
       >
         Enviar
       </button>

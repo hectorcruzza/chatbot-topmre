@@ -4,13 +4,7 @@ import ChatMessages from "./ChatMessages";
 import ChatInput from "./ChatInput";
 import { getResponse } from "../config/gemini";
 
-export default function ChatWindow({ onClose }) {
-  const [messages, setMessages] = useState([
-    {
-      role: "model",
-      text: "¡Hola! Bienvenido a Top Mexico Real Estate. Estoy aquí para ayudarte a encontrar tu propiedad ideal. Para comenzar, ¿en qué zona de México te gustaría que se encuentre tu propiedad?",
-    },
-  ]);
+export default function ChatWindow({ onClose, messages, setMessages }) {
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef(null);
 

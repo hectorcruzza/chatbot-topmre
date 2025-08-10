@@ -6,7 +6,7 @@ export default function ChatMessages({ messages, isLoading }) {
       {messages.map((msg, index) => (
         <div
           key={index}
-          className={`p-2 rounded-lg max-w-[80%] ${
+          className={`p-2 rounded-lg shadow-sm max-w-[80%] ${
             msg.role === "user"
               ? "bg-[#e98b8f] text-white ml-auto"
               : "bg-white text-gray-800 mr-auto"
@@ -17,8 +17,9 @@ export default function ChatMessages({ messages, isLoading }) {
           </div>
         </div>
       ))}
+
       {isLoading && (
-        <div className="bg-white text-gray-500 p-2 rounded-lg mr-auto italic">
+        <div className="bg-white text-gray-500 p-2 rounded-lg shadow-sm mr-auto italic">
           Escribiendo...
         </div>
       )}
