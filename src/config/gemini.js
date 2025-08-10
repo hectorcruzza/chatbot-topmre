@@ -90,11 +90,6 @@ const chat = ai.chats.create({
 });
 
 export async function getResponse(message) {
-  try {
-    const response = await chat.sendMessage({ message: message });
-    // console.log("Response:", response.text);
-    return { role: "model", text: response.text };
-  } catch (error) {
-    console.log("Error fetching response:", error);
-  }
+  const response = await chat.sendMessage({ message: message });
+  return { role: "model", text: response.text };
 }

@@ -1,19 +1,17 @@
-import { useEffect } from "react";
-import { getResponse } from "./gemini/gemini";
+import { useState } from "react";
+import ChatToggleButton from "./components/ChatToggleButton";
+import ChatWindow from "./components/ChatWindow";
 
 export default function App() {
-  const fetchResponse = async () => {
-    const message = "Hola, quiero buscar una propiedad.";
-    await getResponse(message);
-  };
-
-  useEffect(() => {
-    fetchResponse();
-  }, []);
+  const [isOpen, setIsOpen] = useState(false);
 
   return (
     <>
-      <h1 className="text-2xl font-bold">Chatbot</h1>
+      {isOpen && <ChatWindow onClose={() => setIsOpen(false)} />}
+
+      {(!isOpen || window.innerWidth >= 768) && (
+        <ChatToggleButton isOpen={isOpen} onClick={() => setIsOpen(!isOpen)} />
+      )}
     </>
   );
 }
