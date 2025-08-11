@@ -1,4 +1,5 @@
 import { GoogleGenAI, Type } from "@google/genai";
+import { loadListings, filterListings } from "../lib/xmlListings.js";
 
 const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_GEMINI_API_KEY });
 
@@ -57,11 +58,39 @@ const setSearchParamsFunction = {
   },
 };
 
-function setSearchParams(zona, presupuesto, currency, tipo) {
+async function setSearchParams(zona, presupuesto, currency, tipo) {
   console.log(
     `Zona: ${zona}, Presupuesto: ${presupuesto}, Moneda: ${currency}, Tipo: ${tipo}`
   );
-  return { zona, presupuesto, currency, tipo };
+
+  const all = await loadListings();
+  const matches = filterListings(all, { zona, presupuesto, currency, tipo });
+
+  const toLine = (p) => {
+    const beds = p.bedrooms ? `, ${p.bedrooms} rec.` : "";
+    const baths = p.bathrooms ? `, ${p.bathrooms} baños` : "";
+    const img = p.photo ? ` – [Link/Imagen: ${p.photo}]` : "";
+    const price = `${Number(p.price).toLocaleString()} ${p.currency}`;
+    const converted = p.convertedPrice ? ` (~${p.convertedPrice})` : "";
+    return `${p.title || "(sin título)"} – ${p.city} – ${
+      p.subType
+    } – ${price}${converted}${beds}${baths}${img}`;
+  };
+
+  if (matches.length > 0) {
+    const body =
+      `Propiedades encontradas (${matches.length}):\n` +
+      matches.map((p) => `- ${toLine(p)}`).join("\n") +
+      `\n\nMuéstrale estas propiedades al usuario.`;
+
+    return body;
+  }
+
+  return `No encontré propiedades que coincidan con:
+  - Zona: ${zona}
+  - Presupuesto: ${presupuesto} ${currency}
+  - Tipo: ${tipo}
+  ¿Quieres ajustar alguno de los filtros o iniciar una nueva búsqueda?`;
 }
 
 const chat = ai.chats.create({
@@ -212,20 +241,14 @@ export async function getResponse(message) {
     const toolCall = response.functionCalls[0];
 
     if (toolCall.name === "set_search_params") {
-      const result = setSearchParams(
+      const body = await setSearchParams(
         toolCall.args.zona,
         toolCall.args.presupuesto,
         toolCall.args.currency,
         toolCall.args.tipo
       );
 
-      const simulatedXMLData = `Atributos especificados: 
-      Zona: ${result.zona}, 
-      Presupuesto: ${result.presupuesto}, 
-      Moneda: ${result.currency}, 
-      Tipo: ${result.tipo}.`;
-
-      const followUp = await chat.sendMessage({ message: simulatedXMLData });
+      const followUp = await chat.sendMessage({ message: body });
 
       return { role: "model", text: followUp.text };
     }
