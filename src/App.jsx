@@ -7,7 +7,8 @@ export default function App() {
   const [messages, setMessages] = useState([
     {
       role: "model",
-      text: "¡Hola! Bienvenido a Top Mexico Real Estate. Estoy aquí para ayudarte a encontrar tu propiedad ideal. Para comenzar, ¿en qué zona de México te gustaría que se encuentre tu propiedad?",
+      text: `¡Hola! Bienvenido a Top Mexico Real Estate. Estoy aquí para ayudarte a encontrar tu propiedad ideal. ¿En qué zona de México te gustaría que se encuentre tu propiedad?
+      Estas son las zonas disponibles: Campeche, Tulum, Playa del Carmen, Yucatán, Cancún, Puerto Morelos, Akumal, Puerto Aventuras, Cozumel y Bacalar.`,
     },
   ]);
 

@@ -59,9 +59,9 @@ const setSearchParamsFunction = {
 };
 
 async function setSearchParams(zona, presupuesto, currency, tipo) {
-  console.log(
-    `Zona: ${zona}, Presupuesto: ${presupuesto}, Moneda: ${currency}, Tipo: ${tipo}`
-  );
+  // console.log(
+  //   `Zona: ${zona}, Presupuesto: ${presupuesto}, Moneda: ${currency}, Tipo: ${tipo}`
+  // );
 
   const all = await loadListings();
   const matches = filterListings(all, { zona, presupuesto, currency, tipo });
@@ -69,7 +69,7 @@ async function setSearchParams(zona, presupuesto, currency, tipo) {
   const toLine = (p) => {
     const beds = p.bedrooms ? `, ${p.bedrooms} rec.` : "";
     const baths = p.bathrooms ? `, ${p.bathrooms} baños` : "";
-    const img = p.photo ? ` – [Link/Imagen: ${p.photo}]` : "";
+    const img = p.photo ? `\n![Imagen de la propiedad](${p.photo})` : "";
     const price = `${Number(p.price).toLocaleString()} ${p.currency}`;
     const converted = p.convertedPrice ? ` (~${p.convertedPrice})` : "";
     return `${p.title || "(sin título)"} – ${p.city} – ${
@@ -86,7 +86,7 @@ async function setSearchParams(zona, presupuesto, currency, tipo) {
     return body;
   }
 
-  return `No encontré propiedades que coincidan con:
+  return `Muéstrale al usuario lo siguiente: No encontré propiedades que coincidan con:
   - Zona: ${zona}
   - Presupuesto: ${presupuesto} ${currency}
   - Tipo: ${tipo}
@@ -169,7 +169,8 @@ const chat = ai.chats.create({
             currency.
             tipo.
         Mostrar resultados → Hasta 10 propiedades que coincidan, con:
-            Nombre/título, ciudad, tipo, precio con moneda, descripción breve, recámaras y baños (si aplica), y 1 imagen o link si existe.
+            Nombre/título, ciudad, tipo, precio con moneda, descripción breve, recámaras y baños (si aplica), y si existe imagen, muéstrala justo debajo de las características usando Markdown en el formato:
+            ![Texto alternativo](URL)
         Si no hay resultados, indicarlo y sugerir ajustar filtros.
         Al final de mostrar las propiedades, preguntar:
             "¿Te interesa alguna de estas propiedades, o quieres iniciar una nueva búsqueda?"
@@ -202,9 +203,24 @@ const chat = ai.chats.create({
     Estos son los tipos disponibles: Condo, Penthouse, Casa, Estudio, Lote residencial, Lote comercial, Espacio comercial, Townhouse, Villa, Loft y Lote multifamiliar.
     Usuario: Condo
     Bot: Excelente. Aquí tienes algunas opciones que se ajustan a lo que buscas:
-        Condo Playa Coral – Cancún – 2 recámaras, 2 baños – 145,000 USD – [link/imagen]
-        Condo Vista Mar – Cancún – 1 recámara, terraza – 140,000 USD – [link/imagen]
-        Condo Jardines del Sol – Cancún – 3 recámaras, 2 baños – 150,000 USD – [link/imagen]
+    - **Condo Playa Coral** (Muestra la descripción completa si existe)
+      - **Ciudad**: Cancún
+      - **Tipo**: Condo
+      - **Precio**: 145,000 USD (~2,610,000 MXN)
+      - **Características**: 2 recámaras, 2 baños
+      ![Imagen de la propiedad](https://...)
+    - **Condo Vista Mar**
+      - **Ciudad**: Cancún
+      - **Tipo**: Condo
+      - **Precio**: 140,000 USD (~2,520,000 MXN)
+      - **Características**: 1 recámara, terraza, 1 baño
+      ![Imagen de la propiedad](https://...)
+    - **Condo Jardines del Sol**
+      - **Ciudad**: Cancún
+      - **Tipo**: Condo
+      - **Precio**: 150,000 USD (~2,700,000 MXN)
+      - **Características**: 3 recámaras, 2 baños
+      ![Imagen de la propiedad](https://...)
     ¿Te interesa alguna de estas propiedades, o quieres iniciar una nueva búsqueda?
 
     Ejemplo 2 – Elegir propiedad y mostrar opciones
@@ -220,6 +236,11 @@ const chat = ai.chats.create({
     Bot: Puedo ayudarte con todo lo relacionado a la búsqueda de propiedades en México.
     Si quieres, retomemos la búsqueda.
     ¿En qué zona de México te gustaría que se encuentre tu propiedad?
+    Estas son las zonas disponibles: Campeche, Tulum, Playa del Carmen, Yucatán, Cancún, Puerto Morelos, Akumal, Puerto Aventuras, Cozumel y Bacalar.
+
+    Ejemplo 4 – Nueva búsqueda
+    Usuario: Quiero iniciar una nueva búsqueda.
+    Bot: Perfecto, empecemos de nuevo. ¿En qué zona de México te gustaría que se encuentre tu propiedad?
     Estas son las zonas disponibles: Campeche, Tulum, Playa del Carmen, Yucatán, Cancún, Puerto Morelos, Akumal, Puerto Aventuras, Cozumel y Bacalar.`,
   },
   history: [
@@ -227,7 +248,8 @@ const chat = ai.chats.create({
       role: "model",
       parts: [
         {
-          text: "¡Hola! Bienvenido a Top Mexico Real Estate. Estoy aquí para ayudarte a encontrar tu propiedad ideal. Para comenzar, ¿en qué zona de México te gustaría que se encuentre tu propiedad?",
+          text: `¡Hola! Bienvenido a Top Mexico Real Estate. Estoy aquí para ayudarte a encontrar tu propiedad ideal. ¿En qué zona de México te gustaría que se encuentre tu propiedad?
+          Estas son las zonas disponibles: Campeche, Tulum, Playa del Carmen, Yucatán, Cancún, Puerto Morelos, Akumal, Puerto Aventuras, Cozumel y Bacalar.`,
         },
       ],
     },
